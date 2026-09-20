@@ -89,6 +89,54 @@ export interface ShiftScheduleEntry extends Shift {
   employee_name: string;
 }
 
+export type ShortageRecordStatus = "detected" | "skipped" | "resolved";
+
+export interface ShortageRecord {
+  id: string;
+  week_id: string;
+  requirement_id: string;
+  day_of_week: DayOfWeek;
+  role: StaffRole;
+  start_time: string;
+  end_time: string;
+  required_count: number;
+  scheduled_count: number;
+  status: ShortageRecordStatus;
+  skipped_by: string | null;
+  skipped_at: string | null;
+  created_at: string;
+  updated_at: string;
+  resolved_at: string | null;
+}
+
+export type ShortageRequestStatus = "queued" | "open" | "filled" | "all_declined" | "cancelled";
+
+export interface ShortageRequest {
+  id: string;
+  week_id: string;
+  shortage_record_id: string | null;
+  day_of_week: DayOfWeek;
+  role: StaffRole;
+  start_time: string;
+  end_time: string;
+  needed_count: number;
+  status: ShortageRequestStatus;
+  created_by: string;
+  created_at: string;
+  opened_at: string | null;
+  closed_at: string | null;
+  closed_reason: string | null;
+}
+
+export interface ShortageResponse {
+  id: string;
+  request_id: string;
+  employee_id: string;
+  response: "accepted" | "declined";
+  led_to_shift: boolean;
+  responded_at: string;
+}
+
 export interface AuditLogEntry {
   id: string;
   occurred_at: string;

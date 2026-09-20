@@ -77,7 +77,11 @@
     "openRequests": "Urgent shifts",
     "noOpenRequests": "No urgent shifts right now",
     "othersCount_one": "+{{count}} person working",
-    "othersCount_other": "+{{count}} people working"
+    "othersCount_other": "+{{count}} people working",
+    "urgentNeed": "Need a {{role}}: {{day}}, {{start}}–{{end}}",
+    "iWillCome": "I'll come in",
+    "iCannot": "I can't",
+    "requestTaken": "Sorry, this shift has already been taken."
   },
   "dayDetail": {
     "from": "From",
@@ -114,7 +118,16 @@
       "noRequirement": "No requirement set",
       "people": "people",
       "peopleScheduled_one": "{{count}} person scheduled",
-      "peopleScheduled_other": "{{count}} people scheduled"
+      "peopleScheduled_other": "{{count}} people scheduled",
+      "shortBy_one": "Short by {{count}} person",
+      "shortBy_other": "Short by {{count}} people",
+      "requestStaff": "Request staff",
+      "requestHint": "You can request just part of the period",
+      "sendRequest": "Send request",
+      "skipped": "Shortage skipped by admin",
+      "requestOpen": "Request sent to employees",
+      "requestQueued": "Queued (dishwasher requests go out first)",
+      "fromRequest": "from an urgent request"
     }
   },
   "install": {

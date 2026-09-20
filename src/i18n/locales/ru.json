@@ -79,7 +79,11 @@
     "noOpenRequests": "Пока нет срочных смен",
     "othersCount_one": "+{{count}} человек работает",
     "othersCount_few": "+{{count}} человека работает",
-    "othersCount_many": "+{{count}} человек работает"
+    "othersCount_many": "+{{count}} человек работает",
+    "urgentNeed": "Нужен {{role}}: {{day}}, {{start}}–{{end}}",
+    "iWillCome": "Я выйду",
+    "iCannot": "Я не могу",
+    "requestTaken": "К сожалению, эта смена уже занята."
   },
   "dayDetail": {
     "from": "С",
@@ -117,7 +121,17 @@
       "people": "чел.",
       "peopleScheduled_one": "{{count}} человек в расписании",
       "peopleScheduled_few": "{{count}} человека в расписании",
-      "peopleScheduled_many": "{{count}} человек в расписании"
+      "peopleScheduled_many": "{{count}} человек в расписании",
+      "shortBy_one": "Не хватает {{count}} человека",
+      "shortBy_few": "Не хватает {{count}} человек",
+      "shortBy_many": "Не хватает {{count}} человек",
+      "requestStaff": "Запросить сотрудника",
+      "requestHint": "Можно запросить только часть периода",
+      "sendRequest": "Отправить запрос",
+      "skipped": "Дефицит пропущен администратором",
+      "requestOpen": "Запрос отправлен сотрудникам",
+      "requestQueued": "Запрос в очереди (сначала обрабатываются посудомойщики)",
+      "fromRequest": "по срочному запросу"
     }
   },
   "install": {

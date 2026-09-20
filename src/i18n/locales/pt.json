@@ -77,7 +77,11 @@
     "openRequests": "Turnos urgentes",
     "noOpenRequests": "Nenhum turno urgente no momento",
     "othersCount_one": "+{{count}} pessoa trabalhando",
-    "othersCount_other": "+{{count}} pessoas trabalhando"
+    "othersCount_other": "+{{count}} pessoas trabalhando",
+    "urgentNeed": "Precisa de um(a) {{role}}: {{day}}, {{start}}–{{end}}",
+    "iWillCome": "Eu vou",
+    "iCannot": "Não posso",
+    "requestTaken": "Infelizmente este turno já foi preenchido."
   },
   "dayDetail": {
     "from": "Das",
@@ -114,7 +118,16 @@
       "noRequirement": "Nenhuma necessidade definida",
       "people": "pessoas",
       "peopleScheduled_one": "{{count}} pessoa escalada",
-      "peopleScheduled_other": "{{count}} pessoas escaladas"
+      "peopleScheduled_other": "{{count}} pessoas escaladas",
+      "shortBy_one": "Falta {{count}} pessoa",
+      "shortBy_other": "Faltam {{count}} pessoas",
+      "requestStaff": "Solicitar funcionário",
+      "requestHint": "Você pode solicitar apenas parte do período",
+      "sendRequest": "Enviar solicitação",
+      "skipped": "Falta ignorada pelo administrador",
+      "requestOpen": "Solicitação enviada aos funcionários",
+      "requestQueued": "Na fila (louceiros são processados primeiro)",
+      "fromRequest": "de uma solicitação urgente"
     }
   },
   "install": {

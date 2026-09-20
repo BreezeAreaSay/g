@@ -1,13 +1,24 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useActiveWeek } from "@/hooks/useActiveWeek";
 import { useWeekRequirements } from "@/hooks/useWeekRequirements";
 import { useWeekShifts } from "@/hooks/useWeekShifts";
+import { useShortageRecords } from "@/hooks/useShortageRecords";
+import { useShortageRequests } from "@/hooks/useShortageRequests";
 import { supabase } from "@/lib/supabaseClient";
 import { minutesToTimeString, timeStringToMinutes } from "@/lib/time";
 import { computeCoverage } from "@/lib/coverage";
-import { STAFF_ROLES, type DayOfWeek, type ShiftScheduleEntry, type StaffRole, type StaffingRequirement } from "@/types/database";
+import {
+  STAFF_ROLES,
+  type DayOfWeek,
+  type ShiftScheduleEntry,
+  type ShortageRecord,
+  type ShortageRequest,
+  type StaffRole,
+  type StaffingRequirement,
+} from "@/types/database";
+import { Button } from "@/components/Button";
 
 function CoverageBadgeIcon({ deficit }: { deficit: number }) {
   return <span>{deficit > 0 ? "🔴" : "🟢"}</span>;
@@ -22,6 +33,8 @@ export function AdminDayPage() {
   const { week } = useActiveWeek();
   const { requirements, refetch: refetchRequirements } = useWeekRequirements(week?.id ?? null);
   const { shifts } = useWeekShifts(week?.id ?? null);
+  const { records: shortageRecords, refetch: refetchShortages } = useShortageRecords(week?.id ?? null);
+  const { requests: shortageRequests, refetch: refetchRequests } = useShortageRequests(week?.id ?? null);
 
   const dayShifts = shifts.filter((s) => s.day_of_week === dayOfWeek);
 
@@ -48,6 +61,23 @@ export function AdminDayPage() {
     await refetchRequirements();
   }
 
+  async function skipShortage(shortageRecordId: string) {
+    await supabase.rpc("admin_skip_shortage", { p_shortage_record_id: shortageRecordId });
+    await refetchShortages();
+  }
+
+  async function createRequest(record: ShortageRecord, startTime: string, endTime: string, neededCount: number) {
+    await supabase.rpc("admin_create_shortage_request", {
+      p_day_of_week: record.day_of_week,
+      p_role: record.role,
+      p_start_time: startTime,
+      p_end_time: endTime,
+      p_needed_count: neededCount,
+      p_shortage_record_id: record.id,
+    });
+    await Promise.all([refetchRequests(), refetchShortages()]);
+  }
+
   return (
     <div>
       <button onClick={() => navigate("/admin")} className="mb-4 text-sm font-medium text-slate-500">
@@ -59,12 +89,15 @@ export function AdminDayPage() {
         <RoleSection
           key={role}
           role={role}
-          dayOfWeek={dayOfWeek}
           requirements={requirements.filter((r) => r.day_of_week === dayOfWeek && r.role === role)}
           shifts={dayShifts.filter((s) => s.role === role)}
+          shortageRecords={shortageRecords.filter((r) => r.day_of_week === dayOfWeek && r.role === role)}
+          shortageRequests={shortageRequests.filter((r) => r.day_of_week === dayOfWeek && r.role === role)}
           onAdd={() => void addRequirement(role)}
           onUpdate={updateRequirement}
           onDelete={deleteRequirement}
+          onSkip={skipShortage}
+          onCreateRequest={createRequest}
         />
       ))}
 
@@ -81,6 +114,7 @@ export function AdminDayPage() {
                   <span className="font-medium text-slate-900">{s.employee_name}</span>
                   <span className="text-sm text-slate-500">
                     {t(`roles.${s.role}`)} · {s.start_time.slice(0, 5)}–{s.end_time.slice(0, 5)}
+                    {s.source === "shortage_response" && ` · ${t("admin.day.fromRequest")}`}
                   </span>
                 </li>
               ))}
@@ -95,17 +129,24 @@ function RoleSection({
   role,
   requirements,
   shifts,
+  shortageRecords,
+  shortageRequests,
   onAdd,
   onUpdate,
   onDelete,
+  onSkip,
+  onCreateRequest,
 }: {
   role: StaffRole;
-  dayOfWeek: DayOfWeek;
   requirements: StaffingRequirement[];
   shifts: ShiftScheduleEntry[];
+  shortageRecords: ShortageRecord[];
+  shortageRequests: ShortageRequest[];
   onAdd: () => void;
   onUpdate: (id: string, patch: Partial<Pick<StaffingRequirement, "start_time" | "end_time" | "required_count">>) => void;
   onDelete: (id: string) => void;
+  onSkip: (shortageRecordId: string) => void;
+  onCreateRequest: (record: ShortageRecord, startTime: string, endTime: string, neededCount: number) => void;
 }) {
   const { t } = useTranslation();
 
@@ -141,34 +182,54 @@ function RoleSection({
         <ul className="mt-3 space-y-2">
           {requirements
             .sort((a, b) => a.start_time.localeCompare(b.start_time))
-            .map((r) => (
-              <li key={r.id} className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 p-2.5">
-                <input
-                  type="time"
-                  defaultValue={r.start_time.slice(0, 5)}
-                  onBlur={(e) => e.target.value && onUpdate(r.id, { start_time: e.target.value })}
-                  className="min-h-10 rounded-lg border border-slate-300 bg-white px-2 text-sm"
-                />
-                <span className="text-slate-400">–</span>
-                <input
-                  type="time"
-                  defaultValue={r.end_time.slice(0, 5)}
-                  onBlur={(e) => e.target.value && onUpdate(r.id, { end_time: e.target.value })}
-                  className="min-h-10 rounded-lg border border-slate-300 bg-white px-2 text-sm"
-                />
-                <input
-                  type="number"
-                  min={0}
-                  defaultValue={r.required_count}
-                  onBlur={(e) => onUpdate(r.id, { required_count: Number(e.target.value) })}
-                  className="min-h-10 w-16 rounded-lg border border-slate-300 bg-white px-2 text-sm"
-                />
-                <span className="text-xs text-slate-500">{t("admin.day.people")}</span>
-                <button onClick={() => onDelete(r.id)} className="ml-auto text-sm text-red-600">
-                  {t("common.delete")}
-                </button>
-              </li>
-            ))}
+            .map((r) => {
+              const record = shortageRecords.find((sr) => sr.requirement_id === r.id);
+              const activeRequest = shortageRequests.find(
+                (req) => req.shortage_record_id === record?.id && (req.status === "queued" || req.status === "open"),
+              );
+              return (
+                <li key={r.id} className="rounded-xl border border-slate-100 bg-slate-50 p-2.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      type="time"
+                      defaultValue={r.start_time.slice(0, 5)}
+                      onBlur={(e) => e.target.value && onUpdate(r.id, { start_time: e.target.value })}
+                      className="min-h-10 rounded-lg border border-slate-300 bg-white px-2 text-sm"
+                    />
+                    <span className="text-slate-400">–</span>
+                    <input
+                      type="time"
+                      defaultValue={r.end_time.slice(0, 5)}
+                      onBlur={(e) => e.target.value && onUpdate(r.id, { end_time: e.target.value })}
+                      className="min-h-10 rounded-lg border border-slate-300 bg-white px-2 text-sm"
+                    />
+                    <input
+                      type="number"
+                      min={0}
+                      defaultValue={r.required_count}
+                      onBlur={(e) => onUpdate(r.id, { required_count: Number(e.target.value) })}
+                      className="min-h-10 w-16 rounded-lg border border-slate-300 bg-white px-2 text-sm"
+                    />
+                    <span className="text-xs text-slate-500">{t("admin.day.people")}</span>
+                    <button onClick={() => onDelete(r.id)} className="ml-auto text-sm text-red-600">
+                      {t("common.delete")}
+                    </button>
+                  </div>
+
+                  {record && record.status === "detected" && !activeRequest && (
+                    <ShortageActions record={record} onSkip={onSkip} onCreateRequest={onCreateRequest} />
+                  )}
+                  {record && record.status === "skipped" && (
+                    <p className="mt-2 text-xs font-medium text-slate-400">{t("admin.day.skipped")}</p>
+                  )}
+                  {activeRequest && (
+                    <p className="mt-2 text-xs font-medium text-amber-600">
+                      {activeRequest.status === "open" ? t("admin.day.requestOpen") : t("admin.day.requestQueued")}
+                    </p>
+                  )}
+                </li>
+              );
+            })}
         </ul>
       )}
 
@@ -187,5 +248,70 @@ function RoleSection({
         </div>
       )}
     </section>
+  );
+}
+
+function ShortageActions({
+  record,
+  onSkip,
+  onCreateRequest,
+}: {
+  record: ShortageRecord;
+  onSkip: (id: string) => void;
+  onCreateRequest: (record: ShortageRecord, start: string, end: string, needed: number) => void;
+}) {
+  const { t } = useTranslation();
+  const [expanded, setExpanded] = useState(false);
+  const [start, setStart] = useState(record.start_time.slice(0, 5));
+  const [end, setEnd] = useState(record.end_time.slice(0, 5));
+  const [needed, setNeeded] = useState(record.required_count - record.scheduled_count);
+
+  if (!expanded) {
+    return (
+      <div className="mt-2 flex items-center gap-2">
+        <span className="text-xs font-semibold text-red-600">
+          {t("admin.day.shortBy", { count: record.required_count - record.scheduled_count })}
+        </span>
+        <button onClick={() => setExpanded(true)} className="ml-auto rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white">
+          {t("admin.day.requestStaff")}
+        </button>
+        <button onClick={() => onSkip(record.id)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600">
+          {t("common.skip")}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-2 space-y-2 rounded-lg bg-white p-2">
+      <p className="text-xs text-slate-500">{t("admin.day.requestHint")}</p>
+      <div className="flex flex-wrap items-center gap-2">
+        <input type="time" value={start} onChange={(e) => setStart(e.target.value)} className="min-h-10 rounded-lg border border-slate-300 px-2 text-sm" />
+        <span className="text-slate-400">–</span>
+        <input type="time" value={end} onChange={(e) => setEnd(e.target.value)} className="min-h-10 rounded-lg border border-slate-300 px-2 text-sm" />
+        <input
+          type="number"
+          min={1}
+          value={needed}
+          onChange={(e) => setNeeded(Number(e.target.value))}
+          className="min-h-10 w-16 rounded-lg border border-slate-300 px-2 text-sm"
+        />
+        <span className="text-xs text-slate-500">{t("admin.day.people")}</span>
+      </div>
+      <div className="flex gap-2">
+        <Button
+          className="min-h-10 text-sm"
+          onClick={() => {
+            onCreateRequest(record, start, end, needed);
+            setExpanded(false);
+          }}
+        >
+          {t("admin.day.sendRequest")}
+        </Button>
+        <button onClick={() => setExpanded(false)} className="px-3 text-sm text-slate-500">
+          {t("common.cancel")}
+        </button>
+      </div>
+    </div>
   );
 }
