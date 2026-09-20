@@ -1,14 +1,23 @@
 import { createClient } from "@supabase/supabase-js";
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from "./env";
+import { isSupabaseConfigured, SUPABASE_ANON_KEY, SUPABASE_URL } from "./env";
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    // Employees never see a login form — see getOrCreateSession() in
-    // src/context/SessionContext.tsx for how anonymous sessions are created.
+// createClient() validates its URL argument immediately and throws on an
+// empty string — which, at module-import time, would blank the whole app
+// the same way the old env.ts throw did (see the comment there). When not
+// configured, App.tsx shows ConfigMissingScreen before anything ever calls
+// `supabase`, so this placeholder is constructed but never actually used.
+export const supabase = createClient(
+  isSupabaseConfigured ? SUPABASE_URL : "https://placeholder.invalid",
+  isSupabaseConfigured ? SUPABASE_ANON_KEY : "placeholder-anon-key",
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      // Employees never see a login form — see getOrCreateSession() in
+      // src/context/SessionContext.tsx for how anonymous sessions are created.
+    },
   },
-});
+);
 
 /**
  * Ensures the browser has SOME Supabase Auth session (anonymous is fine)

@@ -1,4 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { ConfigMissingScreen } from "@/components/ConfigMissingScreen";
+import { isSupabaseConfigured } from "@/lib/env";
 import { EmployeeSessionProvider } from "@/context/EmployeeSessionContext";
 import { AdminSessionProvider } from "@/context/AdminSessionContext";
 import { EmployeeLayout } from "@/pages/employee/EmployeeLayout";
@@ -12,6 +14,10 @@ import { AdminRequestsPage } from "@/pages/admin/RequestsPage";
 import { AdminHistoryPage } from "@/pages/admin/HistoryPage";
 
 export function App() {
+  if (!isSupabaseConfigured) {
+    return <ConfigMissingScreen />;
+  }
+
   return (
     <BrowserRouter basename="/g">
       <Routes>
