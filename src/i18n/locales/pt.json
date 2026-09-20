@@ -129,7 +129,11 @@
       "requestQueued": "Na fila (louceiros são processados primeiro)",
       "fromRequest": "de uma solicitação urgente",
       "conflictDetected": "Este funcionário tem turnos sobrepostos neste dia — verifique a escala",
-      "peopleScheduledLabel": "Funcionários:"
+      "peopleScheduledLabel": "Funcionários:",
+      "plannedTime": "Horário planejado",
+      "actualTime": "Horário real (chegada – saída)",
+      "attendanceInOnly": "Chegou às {{time}}",
+      "attendanceBoth": "Real: {{start}}–{{end}}"
     },
     "requestStatus": {
       "open": "Enviado",

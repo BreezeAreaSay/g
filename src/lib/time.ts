@@ -1,4 +1,23 @@
+import { fromZonedTime, formatInTimeZone } from "date-fns-tz";
 import type { DayOfWeek, ScheduleWeek } from "@/types/database";
+
+/** The shift's actual calendar date (week.start_date is always Monday = day 0). */
+export function shiftCalendarDate(week: ScheduleWeek, dayOfWeek: DayOfWeek): string {
+  const start = new Date(`${week.start_date}T00:00:00`);
+  start.setDate(start.getDate() + dayOfWeek);
+  return start.toISOString().slice(0, 10);
+}
+
+/** Renders an absolute instant as "HH:MM" in the restaurant's own timezone (spec §35). */
+export function formatTimeInRestaurantTz(isoTimestamp: string, timezone: string): string {
+  return formatInTimeZone(new Date(isoTimestamp), timezone, "HH:mm");
+}
+
+/** Combines a shift's calendar date + a "HH:MM" wall-clock time, interpreted in the
+ * restaurant's timezone, into the UTC instant Postgres expects for a timestamptz. */
+export function combineLocalDateTimeToUtc(dateStr: string, timeStr: string, timezone: string): string {
+  return fromZonedTime(`${dateStr}T${timeStr}:00`, timezone).toISOString();
+}
 
 /** Spec §6: the widest range an employee may self-declare. */
 export const EMPLOYEE_SHIFT_MIN_TIME = "10:00";

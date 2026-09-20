@@ -129,7 +129,11 @@
       "requestQueued": "Queued (dishwasher requests go out first)",
       "fromRequest": "from an urgent request",
       "conflictDetected": "This employee has overlapping shifts today — please check the schedule",
-      "peopleScheduledLabel": "Staff:"
+      "peopleScheduledLabel": "Staff:",
+      "plannedTime": "Planned time",
+      "actualTime": "Actual time (arrived – left)",
+      "attendanceInOnly": "Arrived at {{time}}",
+      "attendanceBoth": "Actual: {{start}}–{{end}}"
     },
     "requestStatus": {
       "open": "Sent",

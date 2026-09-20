@@ -133,7 +133,11 @@
       "requestQueued": "Запрос в очереди (сначала обрабатываются посудомойщики)",
       "fromRequest": "по срочному запросу",
       "conflictDetected": "У сотрудника пересекаются смены в этот день — проверьте расписание",
-      "peopleScheduledLabel": "Сотрудников:"
+      "peopleScheduledLabel": "Сотрудников:",
+      "plannedTime": "Плановое время",
+      "actualTime": "Фактическое время (приход – уход)",
+      "attendanceInOnly": "Пришёл в {{time}}",
+      "attendanceBoth": "Факт: {{start}}–{{end}}"
     },
     "requestStatus": {
       "open": "Отправлен",

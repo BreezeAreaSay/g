@@ -7,12 +7,14 @@ import { useWeekShifts } from "@/hooks/useWeekShifts";
 import { useShortageRecords } from "@/hooks/useShortageRecords";
 import { useShortageRequests } from "@/hooks/useShortageRequests";
 import { supabase } from "@/lib/supabaseClient";
-import { minutesToTimeString, timeStringToMinutes } from "@/lib/time";
+import { combineLocalDateTimeToUtc, formatTimeInRestaurantTz, minutesToTimeString, shiftCalendarDate, timeStringToMinutes } from "@/lib/time";
 import { computeCoverage } from "@/lib/coverage";
 import {
   STAFF_ROLES,
+  type Attendance,
   type DayOfWeek,
   type ScheduleConflict,
+  type ScheduleWeek,
   type ShiftScheduleEntry,
   type ShortageRecord,
   type ShortageRequest,
@@ -161,7 +163,7 @@ export function AdminDayPage() {
             {[...dayShifts]
               .sort((a, b) => a.start_time.localeCompare(b.start_time))
               .map((s) => (
-                <RosterRow key={s.id} shift={s} onUpdate={updateShiftTime} onDelete={deleteShift} />
+                <RosterRow key={s.id} shift={s} week={week ?? null} onUpdate={updateShiftTime} onDelete={deleteShift} />
               ))}
           </ul>
         )}
@@ -172,10 +174,12 @@ export function AdminDayPage() {
 
 function RosterRow({
   shift,
+  week,
   onUpdate,
   onDelete,
 }: {
   shift: ShiftScheduleEntry;
+  week: ScheduleWeek | null;
   onUpdate: (shiftId: string, start: string, end: string) => void;
   onDelete: (shiftId: string) => void;
 }) {
@@ -183,12 +187,65 @@ function RosterRow({
   const [editing, setEditing] = useState(false);
   const [start, setStart] = useState(shift.start_time.slice(0, 5));
   const [end, setEnd] = useState(shift.end_time.slice(0, 5));
+  const [attendance, setAttendance] = useState<Attendance | null>(null);
+  const [clockIn, setClockIn] = useState("");
+  const [clockOut, setClockOut] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const { data } = await supabase.from("attendance").select("*").eq("shift_id", shift.id).maybeSingle();
+      if (cancelled) return;
+      const a = data as Attendance | null;
+      setAttendance(a);
+      if (week) {
+        setClockIn(a?.clock_in_at ? formatTimeInRestaurantTz(a.clock_in_at, week.timezone) : "");
+        setClockOut(a?.clock_out_at ? formatTimeInRestaurantTz(a.clock_out_at, week.timezone) : "");
+      }
+    }
+    void load();
+    const channel = supabase
+      .channel(`admin-attendance-${shift.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "attendance", filter: `shift_id=eq.${shift.id}` }, () => void load())
+      .subscribe();
+    return () => {
+      cancelled = true;
+      void supabase.removeChannel(channel);
+    };
+  }, [shift.id, week]);
+
+  async function saveAttendance() {
+    if (!week) return;
+    const inIso = clockIn ? combineLocalDateTimeToUtc(shiftCalendarDate(week, shift.day_of_week), clockIn, week.timezone) : null;
+    const outIso = clockOut ? combineLocalDateTimeToUtc(shiftCalendarDate(week, shift.day_of_week), clockOut, week.timezone) : null;
+    if (attendance) {
+      await supabase.rpc("admin_correct_attendance", { p_attendance_id: attendance.id, p_clock_in_at: inIso, p_clock_out_at: outIso });
+    } else if (inIso) {
+      // No attendance row yet (employee never tapped "arrived") — admin can still create one.
+      const { data: created } = await supabase.from("attendance").insert({ shift_id: shift.id }).select().single();
+      if (created) {
+        await supabase.rpc("admin_correct_attendance", { p_attendance_id: (created as Attendance).id, p_clock_in_at: inIso, p_clock_out_at: outIso });
+      }
+    }
+  }
+
+  const attendanceSummary =
+    attendance?.clock_in_at && !attendance.clock_out_at
+      ? t("admin.day.attendanceInOnly", { time: week ? formatTimeInRestaurantTz(attendance.clock_in_at, week.timezone) : "" })
+      : attendance?.clock_in_at && attendance.clock_out_at && week
+        ? t("admin.day.attendanceBoth", {
+            start: formatTimeInRestaurantTz(attendance.clock_in_at, week.timezone),
+            end: formatTimeInRestaurantTz(attendance.clock_out_at, week.timezone),
+          })
+        : null;
 
   if (editing) {
     return (
       <li className="rounded-xl border border-slate-200 bg-white p-3">
         <p className="text-sm font-medium text-slate-900">{shift.employee_name}</p>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
+
+        <p className="mt-2 text-xs font-semibold text-slate-500">{t("admin.day.plannedTime")}</p>
+        <div className="mt-1 flex flex-wrap items-center gap-2">
           <input type="time" value={start} onChange={(e) => setStart(e.target.value)} className="min-h-10 rounded-lg border border-slate-300 px-2 text-sm" />
           <span className="text-slate-400">–</span>
           <input type="time" value={end} onChange={(e) => setEnd(e.target.value)} className="min-h-10 rounded-lg border border-slate-300 px-2 text-sm" />
@@ -201,13 +258,23 @@ function RosterRow({
           >
             {t("common.save")}
           </button>
+        </div>
+
+        <p className="mt-3 text-xs font-semibold text-slate-500">{t("admin.day.actualTime")}</p>
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          <input type="time" value={clockIn} onChange={(e) => setClockIn(e.target.value)} className="min-h-10 rounded-lg border border-slate-300 px-2 text-sm" />
+          <span className="text-slate-400">–</span>
+          <input type="time" value={clockOut} onChange={(e) => setClockOut(e.target.value)} className="min-h-10 rounded-lg border border-slate-300 px-2 text-sm" />
+          <button onClick={() => void saveAttendance()} className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white">
+            {t("common.save")}
+          </button>
+        </div>
+
+        <div className="mt-3 flex justify-between">
           <button onClick={() => setEditing(false)} className="text-xs text-slate-500">
             {t("common.cancel")}
           </button>
-          <button
-            onClick={() => onDelete(shift.id)}
-            className="ml-auto text-xs font-semibold text-red-600"
-          >
+          <button onClick={() => onDelete(shift.id)} className="text-xs font-semibold text-red-600">
             {t("common.delete")}
           </button>
         </div>
@@ -223,6 +290,7 @@ function RosterRow({
           {t(`roles.${shift.role}`)} · {shift.start_time.slice(0, 5)}–{shift.end_time.slice(0, 5)}
           {shift.source === "shortage_response" && ` · ${t("admin.day.fromRequest")}`}
         </span>
+        {attendanceSummary && <span className="mt-0.5 block text-xs font-medium text-emerald-600">{attendanceSummary}</span>}
       </button>
     </li>
   );
