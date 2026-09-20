@@ -15,15 +15,22 @@ declare
   v_count int;
   v_shift public.shifts;
   v_conflict_id uuid;
+  v_today date;
 begin
   insert into auth.users (id) values (admin_uid), (emp1_uid), (emp2_uid);
   insert into admin_profiles (user_id, display_name) values (admin_uid, 'Stage5 Admin');
 
   -- A dedicated test week whose date range actually includes "today",
   -- independent of whatever the seeded active week's real calendar dates
-  -- are (this test must pass regardless of what day it's run on).
+  -- are (this test must pass regardless of what day it's run on). "Today"
+  -- must be computed in the week's own timezone (Europe/Moscow), the same
+  -- way clock_in()/clock_out() compute it (see 0020_attendance_rpcs.sql) —
+  -- using the session's plain current_date here would go wrong for part of
+  -- every day, whenever UTC and Moscow (UTC+3) currently disagree about
+  -- what today's date is.
+  v_today := (now() at time zone 'Europe/Moscow')::date;
   insert into schedule_weeks (start_date, end_date, timezone, is_active)
-  values (current_date - v_test_today_dow, current_date - v_test_today_dow + 6, 'Europe/Moscow', false)
+  values (v_today - v_test_today_dow, v_today - v_test_today_dow + 6, 'Europe/Moscow', false)
   returning id into v_test_week_id;
 
   set local role authenticated;
