@@ -1,0 +1,115 @@
+{
+  "common": {
+    "appName": "Schedule",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "back": "Back",
+    "loading": "Loading…",
+    "retry": "Retry",
+    "confirm": "Confirm",
+    "change": "Change",
+    "skip": "Skip",
+    "delete": "Delete",
+    "add": "Add",
+    "edit": "Edit",
+    "logout": "Log out",
+    "yes": "Yes",
+    "no": "No",
+    "requiredField": "Required field",
+    "unknownError": "Something went wrong. Please try again.",
+    "offline": "No connection to the server",
+    "hours": "h",
+    "minutes": "min",
+    "people_one": "{{count}} person",
+    "people_other": "{{count}} people"
+  },
+  "language": {
+    "title": "Choose your language",
+    "subtitle": "Выберите язык / Escolha o idioma"
+  },
+  "days": {
+    "0": "Monday",
+    "1": "Tuesday",
+    "2": "Wednesday",
+    "3": "Thursday",
+    "4": "Friday",
+    "5": "Saturday",
+    "6": "Sunday",
+    "short": {
+      "0": "Mon",
+      "1": "Tue",
+      "2": "Wed",
+      "3": "Thu",
+      "4": "Fri",
+      "5": "Sat",
+      "6": "Sun"
+    }
+  },
+  "roles": {
+    "waiter": "Waiter",
+    "dishwasher": "Dishwasher"
+  },
+  "register": {
+    "title": "Registration",
+    "subtitle": "This takes 10 seconds",
+    "nameLabel": "Your name",
+    "namePlaceholder": "e.g. John",
+    "phoneLabel": "Phone number",
+    "phonePlaceholder": "+1 555 000-0000",
+    "rolesLabel": "What do you work as?",
+    "rolesHint": "You can pick both roles",
+    "submit": "Continue",
+    "welcomeBack": "Welcome back, {{name}}!",
+    "phoneHint": "Your phone number is your ID. Only the admin can see it.",
+    "errorRoleRequired": "Choose at least one role",
+    "errorNameRequired": "Enter your name",
+    "errorPhoneRequired": "Enter your phone number",
+    "errorAuthUnavailable": "Could not start a session. Please contact the admin — anonymous sign-ins may be disabled on the Supabase project."
+  },
+  "home": {
+    "greeting": "Hi, {{name}}!",
+    "weekLabel": "Week",
+    "myShift": "My shift",
+    "notSet": "Not set",
+    "tapToSet": "Tap to set your time",
+    "whoElse": "Who else is working",
+    "openRequests": "Urgent shifts",
+    "noOpenRequests": "No urgent shifts right now"
+  },
+  "admin": {
+    "login": {
+      "title": "Admin sign in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "error": "Wrong email or password",
+      "notAdmin": "This account is not an administrator"
+    },
+    "nav": {
+      "dashboard": "Week",
+      "employees": "Employees",
+      "requests": "Requests",
+      "history": "History"
+    },
+    "employees": {
+      "title": "Employees",
+      "phone": "Phone",
+      "registeredAt": "Registered on",
+      "noEmployees": "No employees have registered yet",
+      "roles": "Roles"
+    }
+  },
+  "install": {
+    "title": "Install the app",
+    "body": "Add this site to your home screen to open it like an app.",
+    "iosHint": "Safari → Share → Add to Home Screen",
+    "androidHint": "Browser menu → Install app"
+  },
+  "notificationsPermission": {
+    "title": "Turn on notifications",
+    "body": "Allow notifications so you never miss an urgent shift or a change.",
+    "enable": "Enable notifications",
+    "denied": "Notifications are blocked in your browser settings. Turn them on to receive urgent requests."
+  }
+}

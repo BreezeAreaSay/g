@@ -1,0 +1,115 @@
+{
+  "common": {
+    "appName": "Escala",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "back": "Voltar",
+    "loading": "Carregando…",
+    "retry": "Tentar novamente",
+    "confirm": "Confirmar",
+    "change": "Alterar",
+    "skip": "Ignorar",
+    "delete": "Excluir",
+    "add": "Adicionar",
+    "edit": "Editar",
+    "logout": "Sair",
+    "yes": "Sim",
+    "no": "Não",
+    "requiredField": "Campo obrigatório",
+    "unknownError": "Algo deu errado. Tente novamente.",
+    "offline": "Sem conexão com o servidor",
+    "hours": "h",
+    "minutes": "min",
+    "people_one": "{{count}} pessoa",
+    "people_other": "{{count}} pessoas"
+  },
+  "language": {
+    "title": "Escolha o idioma",
+    "subtitle": "Выберите язык / Choose your language"
+  },
+  "days": {
+    "0": "Segunda-feira",
+    "1": "Terça-feira",
+    "2": "Quarta-feira",
+    "3": "Quinta-feira",
+    "4": "Sexta-feira",
+    "5": "Sábado",
+    "6": "Domingo",
+    "short": {
+      "0": "Seg",
+      "1": "Ter",
+      "2": "Qua",
+      "3": "Qui",
+      "4": "Sex",
+      "5": "Sáb",
+      "6": "Dom"
+    }
+  },
+  "roles": {
+    "waiter": "Garçom",
+    "dishwasher": "Louceiro"
+  },
+  "register": {
+    "title": "Cadastro",
+    "subtitle": "Isso leva 10 segundos",
+    "nameLabel": "Seu nome",
+    "namePlaceholder": "Ex.: João",
+    "phoneLabel": "Número de telefone",
+    "phonePlaceholder": "+55 11 90000-0000",
+    "rolesLabel": "Em que você trabalha?",
+    "rolesHint": "Você pode escolher as duas funções",
+    "submit": "Continuar",
+    "welcomeBack": "Bem-vindo de volta, {{name}}!",
+    "phoneHint": "Seu telefone é o seu identificador. Só o administrador pode vê-lo.",
+    "errorRoleRequired": "Escolha pelo menos uma função",
+    "errorNameRequired": "Digite seu nome",
+    "errorPhoneRequired": "Digite seu telefone",
+    "errorAuthUnavailable": "Não foi possível iniciar uma sessão. Contate o administrador — o login anônimo pode estar desativado no projeto Supabase."
+  },
+  "home": {
+    "greeting": "Olá, {{name}}!",
+    "weekLabel": "Semana",
+    "myShift": "Meu turno",
+    "notSet": "Não definido",
+    "tapToSet": "Toque para definir o horário",
+    "whoElse": "Quem mais está trabalhando",
+    "openRequests": "Turnos urgentes",
+    "noOpenRequests": "Nenhum turno urgente no momento"
+  },
+  "admin": {
+    "login": {
+      "title": "Acesso do administrador",
+      "email": "Email",
+      "password": "Senha",
+      "submit": "Entrar",
+      "error": "Email ou senha incorretos",
+      "notAdmin": "Esta conta não é administradora"
+    },
+    "nav": {
+      "dashboard": "Semana",
+      "employees": "Funcionários",
+      "requests": "Solicitações",
+      "history": "Histórico"
+    },
+    "employees": {
+      "title": "Funcionários",
+      "phone": "Telefone",
+      "registeredAt": "Cadastrado em",
+      "noEmployees": "Nenhum funcionário cadastrado ainda",
+      "roles": "Funções"
+    }
+  },
+  "install": {
+    "title": "Instale o aplicativo",
+    "body": "Adicione este site à tela inicial para abri-lo como um aplicativo.",
+    "iosHint": "Safari → Compartilhar → Adicionar à Tela de Início",
+    "androidHint": "Menu do navegador → Instalar aplicativo"
+  },
+  "notificationsPermission": {
+    "title": "Ative as notificações",
+    "body": "Permita notificações para não perder turnos urgentes ou alterações.",
+    "enable": "Ativar notificações",
+    "denied": "As notificações estão bloqueadas nas configurações do navegador. Ative-as para receber pedidos urgentes."
+  }
+}
