@@ -216,11 +216,13 @@ function RosterRow({
   }
 
   return (
-    <li className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3">
-      <span className="font-medium text-slate-900">{shift.employee_name}</span>
-      <button onClick={() => setEditing(true)} className="text-sm text-slate-500 underline decoration-dotted">
-        {t(`roles.${shift.role}`)} · {shift.start_time.slice(0, 5)}–{shift.end_time.slice(0, 5)}
-        {shift.source === "shortage_response" && ` · ${t("admin.day.fromRequest")}`}
+    <li className="rounded-xl border border-slate-200 bg-white">
+      <button onClick={() => setEditing(true)} className="w-full px-4 py-3 text-left active:bg-slate-50">
+        <span className="block font-medium text-slate-900">{shift.employee_name}</span>
+        <span className="mt-0.5 block text-sm text-slate-500">
+          {t(`roles.${shift.role}`)} · {shift.start_time.slice(0, 5)}–{shift.end_time.slice(0, 5)}
+          {shift.source === "shortage_response" && ` · ${t("admin.day.fromRequest")}`}
+        </span>
       </button>
     </li>
   );
@@ -369,16 +371,18 @@ function ShortageActions({
 
   if (!expanded) {
     return (
-      <div className="mt-2 flex items-center gap-2">
+      <div className="mt-2">
         <span className="text-xs font-semibold text-red-600">
           {t("admin.day.shortBy", { count: record.required_count - record.scheduled_count })}
         </span>
-        <button onClick={() => setExpanded(true)} className="ml-auto rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white">
-          {t("admin.day.requestStaff")}
-        </button>
-        <button onClick={() => onSkip(record.id)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600">
-          {t("common.skip")}
-        </button>
+        <div className="mt-1.5 flex gap-2">
+          <button onClick={() => setExpanded(true)} className="min-h-9 flex-1 rounded-lg bg-slate-900 px-2 text-xs font-semibold text-white">
+            {t("admin.day.requestStaff")}
+          </button>
+          <button onClick={() => onSkip(record.id)} className="min-h-9 flex-1 rounded-lg border border-slate-300 px-2 text-xs font-semibold text-slate-600">
+            {t("common.skip")}
+          </button>
+        </div>
       </div>
     );
   }
