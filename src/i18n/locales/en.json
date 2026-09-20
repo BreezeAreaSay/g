@@ -127,7 +127,59 @@
       "skipped": "Shortage skipped by admin",
       "requestOpen": "Request sent to employees",
       "requestQueued": "Queued (dishwasher requests go out first)",
-      "fromRequest": "from an urgent request"
+      "fromRequest": "from an urgent request",
+      "conflictDetected": "This employee has overlapping shifts today — please check the schedule",
+      "peopleScheduledLabel": "Staff:"
+    },
+    "requestStatus": {
+      "open": "Sent",
+      "queued": "Queued",
+      "filled": "Closed: filled",
+      "all_declined": "Everyone declined",
+      "cancelled": "Cancelled",
+      "accepted": "coming in",
+      "declined": "can't make it"
+    }
+  },
+  "attendance": {
+    "todayShift": "Today: {{role}}, {{start}}–{{end}}",
+    "iArrived": "I've arrived",
+    "iFinished": "I'm done for the day",
+    "arrivedAt": "Arrived at {{time}}",
+    "summary": "{{start}}–{{end}}"
+  },
+  "history": {
+    "title": "History",
+    "empty": "No events yet",
+    "actor": {
+      "employee": "Employee",
+      "admin": "Admin",
+      "system": "System"
+    },
+    "actions": {
+      "employee_registered": "Employee registered",
+      "employee_relinked": "Employee signed in again",
+      "shift_created": "Shift created",
+      "shift_updated": "Shift updated",
+      "shift_deleted": "Shift deleted",
+      "requirement_created": "Requirement created",
+      "requirement_updated": "Requirement updated",
+      "requirement_deleted": "Requirement deleted",
+      "shortage_detected": "Shortage detected",
+      "shortage_skipped": "Shortage skipped",
+      "shortage_request_created": "Staff request created",
+      "shortage_request_opened": "Request sent",
+      "shortage_declined": "Employee declined",
+      "shortage_all_declined": "Everyone declined",
+      "shortage_accepted": "Employee accepted",
+      "shortage_request_closed": "Request closed",
+      "attendance_clock_in": "Clocked in",
+      "attendance_clock_out": "Clocked out",
+      "attendance_corrected": "Time corrected by admin",
+      "shift_updated_by_admin": "Shift updated by admin",
+      "shift_deleted_by_admin": "Shift deleted by admin",
+      "conflict_detected": "Overlapping shifts detected",
+      "conflict_confirmed": "Overlap confirmed"
     }
   },
   "install": {

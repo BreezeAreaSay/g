@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useActiveWeek } from "@/hooks/useActiveWeek";
@@ -12,6 +12,7 @@ import { computeCoverage } from "@/lib/coverage";
 import {
   STAFF_ROLES,
   type DayOfWeek,
+  type ScheduleConflict,
   type ShiftScheduleEntry,
   type ShortageRecord,
   type ShortageRequest,
@@ -37,6 +38,43 @@ export function AdminDayPage() {
   const { requests: shortageRequests, refetch: refetchRequests } = useShortageRequests(week?.id ?? null);
 
   const dayShifts = shifts.filter((s) => s.day_of_week === dayOfWeek);
+
+  const [conflicts, setConflicts] = useState<ScheduleConflict[]>([]);
+  useEffect(() => {
+    if (!week) return;
+    let cancelled = false;
+    async function loadConflicts() {
+      const { data } = await supabase
+        .from("schedule_conflicts")
+        .select("*")
+        .eq("week_id", week!.id)
+        .eq("day_of_week", dayOfWeek)
+        .eq("status", "pending");
+      if (!cancelled) setConflicts((data as ScheduleConflict[]) ?? []);
+    }
+    void loadConflicts();
+    const channel = supabase
+      .channel(`conflicts-${week.id}-${dayOfWeek}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "schedule_conflicts" }, () => void loadConflicts())
+      .subscribe();
+    return () => {
+      cancelled = true;
+      void supabase.removeChannel(channel);
+    };
+  }, [week, dayOfWeek]);
+
+  async function confirmConflict(id: string) {
+    await supabase.rpc("admin_confirm_conflict", { p_conflict_id: id });
+    setConflicts((prev) => prev.filter((c) => c.id !== id));
+  }
+
+  async function updateShiftTime(shiftId: string, startTime: string, endTime: string) {
+    await supabase.rpc("admin_update_shift", { p_shift_id: shiftId, p_start_time: startTime, p_end_time: endTime });
+  }
+
+  async function deleteShift(shiftId: string) {
+    await supabase.rpc("admin_delete_shift", { p_shift_id: shiftId });
+  }
 
   async function addRequirement(role: StaffRole) {
     if (!week) return;
@@ -101,6 +139,19 @@ export function AdminDayPage() {
         />
       ))}
 
+      {conflicts.length > 0 && (
+        <div className="mt-6 space-y-2">
+          {conflicts.map((c) => (
+            <div key={c.id} className="rounded-2xl border border-amber-300 bg-amber-50 p-3">
+              <p className="text-sm font-semibold text-amber-900">🟡 {t("admin.day.conflictDetected")}</p>
+              <button onClick={() => void confirmConflict(c.id)} className="mt-2 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white">
+                {t("common.confirm")}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="mt-8">
         <h2 className="mb-2 text-sm font-semibold text-slate-500">{t("admin.day.whoWorks")}</h2>
         {dayShifts.length === 0 ? (
@@ -110,18 +161,68 @@ export function AdminDayPage() {
             {[...dayShifts]
               .sort((a, b) => a.start_time.localeCompare(b.start_time))
               .map((s) => (
-                <li key={s.id} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3">
-                  <span className="font-medium text-slate-900">{s.employee_name}</span>
-                  <span className="text-sm text-slate-500">
-                    {t(`roles.${s.role}`)} · {s.start_time.slice(0, 5)}–{s.end_time.slice(0, 5)}
-                    {s.source === "shortage_response" && ` · ${t("admin.day.fromRequest")}`}
-                  </span>
-                </li>
+                <RosterRow key={s.id} shift={s} onUpdate={updateShiftTime} onDelete={deleteShift} />
               ))}
           </ul>
         )}
       </div>
     </div>
+  );
+}
+
+function RosterRow({
+  shift,
+  onUpdate,
+  onDelete,
+}: {
+  shift: ShiftScheduleEntry;
+  onUpdate: (shiftId: string, start: string, end: string) => void;
+  onDelete: (shiftId: string) => void;
+}) {
+  const { t } = useTranslation();
+  const [editing, setEditing] = useState(false);
+  const [start, setStart] = useState(shift.start_time.slice(0, 5));
+  const [end, setEnd] = useState(shift.end_time.slice(0, 5));
+
+  if (editing) {
+    return (
+      <li className="rounded-xl border border-slate-200 bg-white p-3">
+        <p className="text-sm font-medium text-slate-900">{shift.employee_name}</p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <input type="time" value={start} onChange={(e) => setStart(e.target.value)} className="min-h-10 rounded-lg border border-slate-300 px-2 text-sm" />
+          <span className="text-slate-400">–</span>
+          <input type="time" value={end} onChange={(e) => setEnd(e.target.value)} className="min-h-10 rounded-lg border border-slate-300 px-2 text-sm" />
+          <button
+            onClick={() => {
+              onUpdate(shift.id, start, end);
+              setEditing(false);
+            }}
+            className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white"
+          >
+            {t("common.save")}
+          </button>
+          <button onClick={() => setEditing(false)} className="text-xs text-slate-500">
+            {t("common.cancel")}
+          </button>
+          <button
+            onClick={() => onDelete(shift.id)}
+            className="ml-auto text-xs font-semibold text-red-600"
+          >
+            {t("common.delete")}
+          </button>
+        </div>
+      </li>
+    );
+  }
+
+  return (
+    <li className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3">
+      <span className="font-medium text-slate-900">{shift.employee_name}</span>
+      <button onClick={() => setEditing(true)} className="text-sm text-slate-500 underline decoration-dotted">
+        {t(`roles.${shift.role}`)} · {shift.start_time.slice(0, 5)}–{shift.end_time.slice(0, 5)}
+        {shift.source === "shortage_response" && ` · ${t("admin.day.fromRequest")}`}
+      </button>
+    </li>
   );
 }
 

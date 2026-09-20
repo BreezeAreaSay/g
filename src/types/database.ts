@@ -137,6 +137,32 @@ export interface ShortageResponse {
   responded_at: string;
 }
 
+export interface Attendance {
+  id: string;
+  shift_id: string;
+  clock_in_at: string | null;
+  clock_in_source: "employee" | "admin" | null;
+  clock_out_at: string | null;
+  clock_out_source: "employee" | "admin" | null;
+  corrected_by: string | null;
+  corrected_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ScheduleConflict {
+  id: string;
+  week_id: string;
+  employee_id: string;
+  day_of_week: DayOfWeek;
+  shift_id_a: string;
+  shift_id_b: string;
+  status: "pending" | "confirmed";
+  detected_at: string;
+  confirmed_by: string | null;
+  confirmed_at: string | null;
+}
+
 export interface AuditLogEntry {
   id: string;
   occurred_at: string;

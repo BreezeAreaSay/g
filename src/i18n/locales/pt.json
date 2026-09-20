@@ -127,7 +127,59 @@
       "skipped": "Falta ignorada pelo administrador",
       "requestOpen": "Solicitação enviada aos funcionários",
       "requestQueued": "Na fila (louceiros são processados primeiro)",
-      "fromRequest": "de uma solicitação urgente"
+      "fromRequest": "de uma solicitação urgente",
+      "conflictDetected": "Este funcionário tem turnos sobrepostos neste dia — verifique a escala",
+      "peopleScheduledLabel": "Funcionários:"
+    },
+    "requestStatus": {
+      "open": "Enviado",
+      "queued": "Na fila",
+      "filled": "Encerrado: preenchido",
+      "all_declined": "Todos recusaram",
+      "cancelled": "Cancelado",
+      "accepted": "vai vir",
+      "declined": "não pode vir"
+    }
+  },
+  "attendance": {
+    "todayShift": "Hoje: {{role}}, {{start}}–{{end}}",
+    "iArrived": "Cheguei",
+    "iFinished": "Terminei o turno",
+    "arrivedAt": "Chegou às {{time}}",
+    "summary": "{{start}}–{{end}}"
+  },
+  "history": {
+    "title": "Histórico",
+    "empty": "Ainda não há eventos",
+    "actor": {
+      "employee": "Funcionário",
+      "admin": "Administrador",
+      "system": "Sistema"
+    },
+    "actions": {
+      "employee_registered": "Funcionário cadastrado",
+      "employee_relinked": "Funcionário entrou novamente",
+      "shift_created": "Turno criado",
+      "shift_updated": "Turno atualizado",
+      "shift_deleted": "Turno removido",
+      "requirement_created": "Necessidade criada",
+      "requirement_updated": "Necessidade atualizada",
+      "requirement_deleted": "Necessidade removida",
+      "shortage_detected": "Falta detectada",
+      "shortage_skipped": "Falta ignorada",
+      "shortage_request_created": "Solicitação de funcionário criada",
+      "shortage_request_opened": "Solicitação enviada",
+      "shortage_declined": "Funcionário recusou",
+      "shortage_all_declined": "Todos recusaram",
+      "shortage_accepted": "Funcionário aceitou",
+      "shortage_request_closed": "Solicitação encerrada",
+      "attendance_clock_in": "Chegada registrada",
+      "attendance_clock_out": "Saída registrada",
+      "attendance_corrected": "Horário corrigido pelo administrador",
+      "shift_updated_by_admin": "Turno atualizado pelo administrador",
+      "shift_deleted_by_admin": "Turno removido pelo administrador",
+      "conflict_detected": "Turnos sobrepostos detectados",
+      "conflict_confirmed": "Sobreposição confirmada"
     }
   },
   "install": {

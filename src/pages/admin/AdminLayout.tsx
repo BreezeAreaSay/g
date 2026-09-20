@@ -9,6 +9,8 @@ import { AdminLoginPage } from "./LoginPage";
 const TABS = [
   { to: "/admin", label: "admin.nav.dashboard", end: true },
   { to: "/admin/employees", label: "admin.nav.employees" },
+  { to: "/admin/requests", label: "admin.nav.requests" },
+  { to: "/admin/history", label: "admin.nav.history" },
 ];
 
 export function AdminLayout() {

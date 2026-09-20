@@ -6,10 +6,11 @@ import { DAYS_OF_WEEK } from "@/types/database";
 import { useActiveWeek } from "@/hooks/useActiveWeek";
 import { useWeekShifts } from "@/hooks/useWeekShifts";
 import { useShortageRequests } from "@/hooks/useShortageRequests";
-import { formatWeekRange } from "@/lib/time";
+import { formatWeekRange, todayDayOfWeek } from "@/lib/time";
 import { supabase } from "@/lib/supabaseClient";
 import { enablePushForEmployee } from "@/lib/push";
 import { NotificationPermissionBanner } from "@/components/NotificationPermissionBanner";
+import { AttendanceCard } from "@/components/AttendanceCard";
 
 export function HomePage() {
   const { t, i18n } = useTranslation();
@@ -17,6 +18,9 @@ export function HomePage() {
   const { week } = useActiveWeek();
   const { shifts, refetch: refetchShifts } = useWeekShifts(week?.id ?? null);
   const { requests, myResponses, refetch: refetchRequests } = useShortageRequests(week?.id ?? null);
+
+  const todayDow = week ? todayDayOfWeek(week) : null;
+  const todaysShifts = shifts.filter((s) => s.employee_id === employee?.id && s.day_of_week === todayDow);
 
   const openRequests = requests.filter((r) => r.status === "open" && !myResponses.some((resp) => resp.request_id === r.id));
 
@@ -41,6 +45,14 @@ export function HomePage() {
         {employee && (
           <div className="mt-4">
             <NotificationPermissionBanner onEnable={() => enablePushForEmployee(employee.id)} />
+          </div>
+        )}
+
+        {todaysShifts.length > 0 && (
+          <div className="mt-5 space-y-3">
+            {todaysShifts.map((s) => (
+              <AttendanceCard key={s.id} shift={s} />
+            ))}
           </div>
         )}
 

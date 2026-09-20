@@ -12,6 +12,11 @@ const ALL_TYPES = [
   "shortage_all_declined",
   "shortage_request_opened",
   "shortage_request_closed",
+  "attendance_clock_in",
+  "attendance_clock_out",
+  "shift_changed_by_admin",
+  "shift_removed_by_admin",
+  "conflict_detected",
 ];
 
 const SAMPLE_DATA: Record<string, Record<string, unknown>> = {
@@ -24,6 +29,11 @@ const SAMPLE_DATA: Record<string, Record<string, unknown>> = {
   shortage_all_declined: { day_of_week: 3, role: "dishwasher", start_time: "14:00", end_time: "18:00" },
   shortage_request_opened: { day_of_week: 3, role: "dishwasher", start_time: "14:00", end_time: "18:00", needed_count: 1 },
   shortage_request_closed: { reason: "filled" },
+  attendance_clock_in: { employee_name: "Иван", clock_in_at_local: "10:07" },
+  attendance_clock_out: { employee_name: "Иван", clock_out_at_local: "18:03" },
+  shift_changed_by_admin: { day_of_week: 0, old_start_time: "10:00", old_end_time: "18:00", new_start_time: "10:00", new_end_time: "16:00" },
+  shift_removed_by_admin: { day_of_week: 0 },
+  conflict_detected: { employee_id: "x", day_of_week: 2 },
 };
 
 Deno.test("every notification type produces a non-empty title and body in every language", () => {

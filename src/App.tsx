@@ -8,6 +8,8 @@ import { AdminLayout } from "@/pages/admin/AdminLayout";
 import { AdminDashboardPage } from "@/pages/admin/DashboardPage";
 import { AdminEmployeesPage } from "@/pages/admin/EmployeesPage";
 import { AdminDayPage } from "@/pages/admin/AdminDayPage";
+import { AdminRequestsPage } from "@/pages/admin/RequestsPage";
+import { AdminHistoryPage } from "@/pages/admin/HistoryPage";
 
 export function App() {
   return (
@@ -36,6 +38,8 @@ export function App() {
           <Route index element={<AdminDashboardPage />} />
           <Route path="employees" element={<AdminEmployeesPage />} />
           <Route path="day/:dow" element={<AdminDayPage />} />
+          <Route path="requests" element={<AdminRequestsPage />} />
+          <Route path="history" element={<AdminHistoryPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

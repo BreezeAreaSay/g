@@ -124,6 +124,52 @@ export function buildPushMessage(n: PushNotificationInput, lang: Lang): PushMess
         body: { ru: "Сотрудник найден.", en: "A colleague has already taken it.", pt: "Já foi preenchido por um colega." }[lang],
       };
 
+    case "attendance_clock_in":
+      return {
+        title: { ru: "Сотрудник пришёл", en: "Employee arrived", pt: "Funcionário chegou" }[lang],
+        body: {
+          ru: `${d.employee_name} пришёл(-ла) в ${d.clock_in_at_local}`,
+          en: `${d.employee_name} arrived at ${d.clock_in_at_local}`,
+          pt: `${d.employee_name} chegou às ${d.clock_in_at_local}`,
+        }[lang],
+      };
+
+    case "attendance_clock_out":
+      return {
+        title: { ru: "Сотрудник закончил смену", en: "Employee clocked out", pt: "Funcionário saiu" }[lang],
+        body: {
+          ru: `${d.employee_name} закончил(-а) в ${d.clock_out_at_local}`,
+          en: `${d.employee_name} finished at ${d.clock_out_at_local}`,
+          pt: `${d.employee_name} terminou às ${d.clock_out_at_local}`,
+        }[lang],
+      };
+
+    case "shift_changed_by_admin":
+      return {
+        title: { ru: "Администратор изменил вашу смену", en: "Admin changed your shift", pt: "Administrador alterou seu turno" }[lang],
+        body: {
+          ru: `${day(lang, dow)}: было ${hhmm(d.old_start_time as string)}–${hhmm(d.old_end_time as string)}, стало ${hhmm(d.new_start_time as string)}–${hhmm(d.new_end_time as string)}`,
+          en: `${day(lang, dow)}: was ${hhmm(d.old_start_time as string)}–${hhmm(d.old_end_time as string)}, now ${hhmm(d.new_start_time as string)}–${hhmm(d.new_end_time as string)}`,
+          pt: `${day(lang, dow)}: era ${hhmm(d.old_start_time as string)}–${hhmm(d.old_end_time as string)}, agora ${hhmm(d.new_start_time as string)}–${hhmm(d.new_end_time as string)}`,
+        }[lang],
+      };
+
+    case "shift_removed_by_admin":
+      return {
+        title: { ru: "Администратор удалил вашу смену", en: "Admin removed your shift", pt: "Administrador removeu seu turno" }[lang],
+        body: { ru: day(lang, dow), en: day(lang, dow), pt: day(lang, dow) }[lang],
+      };
+
+    case "conflict_detected":
+      return {
+        title: { ru: "Пересечение смен", en: "Overlapping shifts", pt: "Turnos sobrepostos" }[lang],
+        body: {
+          ru: `Проверьте расписание на ${day(lang, dow)}`,
+          en: `Please check the schedule for ${day(lang, dow)}`,
+          pt: `Verifique a escala de ${day(lang, dow)}`,
+        }[lang],
+      };
+
     default:
       return { title: APP_NAME[lang], body: n.type };
   }

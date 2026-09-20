@@ -131,7 +131,59 @@
       "skipped": "Дефицит пропущен администратором",
       "requestOpen": "Запрос отправлен сотрудникам",
       "requestQueued": "Запрос в очереди (сначала обрабатываются посудомойщики)",
-      "fromRequest": "по срочному запросу"
+      "fromRequest": "по срочному запросу",
+      "conflictDetected": "У сотрудника пересекаются смены в этот день — проверьте расписание",
+      "peopleScheduledLabel": "Сотрудников:"
+    },
+    "requestStatus": {
+      "open": "Отправлен",
+      "queued": "В очереди",
+      "filled": "Закрыт: найден",
+      "all_declined": "Все отказались",
+      "cancelled": "Отменён",
+      "accepted": "выйдет",
+      "declined": "не может"
+    }
+  },
+  "attendance": {
+    "todayShift": "Сегодня: {{role}}, {{start}}–{{end}}",
+    "iArrived": "Я пришёл на смену",
+    "iFinished": "Я закончил смену",
+    "arrivedAt": "Пришёл в {{time}}",
+    "summary": "{{start}}–{{end}}"
+  },
+  "history": {
+    "title": "История",
+    "empty": "Пока нет событий",
+    "actor": {
+      "employee": "Сотрудник",
+      "admin": "Администратор",
+      "system": "Система"
+    },
+    "actions": {
+      "employee_registered": "Регистрация сотрудника",
+      "employee_relinked": "Повторный вход сотрудника",
+      "shift_created": "Смена создана",
+      "shift_updated": "Смена изменена",
+      "shift_deleted": "Смена удалена",
+      "requirement_created": "Потребность создана",
+      "requirement_updated": "Потребность изменена",
+      "requirement_deleted": "Потребность удалена",
+      "shortage_detected": "Обнаружена нехватка",
+      "shortage_skipped": "Нехватка пропущена",
+      "shortage_request_created": "Создан запрос сотруднику",
+      "shortage_request_opened": "Запрос отправлен",
+      "shortage_declined": "Сотрудник отказался",
+      "shortage_all_declined": "Все отказались",
+      "shortage_accepted": "Сотрудник согласился",
+      "shortage_request_closed": "Запрос закрыт",
+      "attendance_clock_in": "Приход на смену",
+      "attendance_clock_out": "Уход со смены",
+      "attendance_corrected": "Время исправлено администратором",
+      "shift_updated_by_admin": "Смена изменена администратором",
+      "shift_deleted_by_admin": "Смена удалена администратором",
+      "conflict_detected": "Обнаружено пересечение смен",
+      "conflict_confirmed": "Пересечение подтверждено"
     }
   },
   "install": {

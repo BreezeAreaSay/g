@@ -1,4 +1,4 @@
-import type { ScheduleWeek } from "@/types/database";
+import type { DayOfWeek, ScheduleWeek } from "@/types/database";
 
 /** Spec §6: the widest range an employee may self-declare. */
 export const EMPLOYEE_SHIFT_MIN_TIME = "10:00";
@@ -19,6 +19,28 @@ export function minutesToTimeString(minutes: number): string {
     .padStart(2, "0");
   const m = (minutes % 60).toString().padStart(2, "0");
   return `${h}:${m}`;
+}
+
+/**
+ * Which day_of_week (0=Mon..6=Sun) "today" is within this week, in the
+ * RESTAURANT's own timezone (spec §35) — never the visitor's device
+ * clock. Returns null if today falls outside the week's date range.
+ * Mirrors the same calculation the clock_in()/clock_out() RPCs do
+ * server-side (the real guard); this is only for deciding when to show
+ * the button.
+ */
+export function todayDayOfWeek(week: ScheduleWeek): DayOfWeek | null {
+  const todayInTz = new Intl.DateTimeFormat("en-CA", {
+    timeZone: week.timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date()); // "en-CA" formats as YYYY-MM-DD
+
+  const start = new Date(`${week.start_date}T00:00:00`);
+  const today = new Date(`${todayInTz}T00:00:00`);
+  const diffDays = Math.round((today.getTime() - start.getTime()) / 86_400_000);
+  return diffDays >= 0 && diffDays <= 6 ? (diffDays as DayOfWeek) : null;
 }
 
 export function isWithinEmployeeShiftBounds(startMinutes: number, endMinutes: number): boolean {
