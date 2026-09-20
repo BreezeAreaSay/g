@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 interface AdminSessionState {
@@ -20,18 +20,29 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AdminSessionState["status"]>("loading");
   const [userId, setUserId] = useState<string | null>(null);
 
+  // See the identical guard in EmployeeSessionContext: onAuthStateChange's
+  // own INITIAL_SESSION firing plus the direct call below can overlap, and
+  // an older refresh() resolving after a newer one (or after signOut) would
+  // otherwise clobber the correct status. Only the latest call may apply.
+  const refreshSeq = useRef(0);
+
   const refresh = useCallback(async () => {
+    const seq = ++refreshSeq.current;
     const { data } = await supabase.auth.getSession();
     // An admin session must be a REAL (non-anonymous) Supabase Auth user —
     // an anonymous employee session must never pass this check.
     if (!data.session || data.session.user.is_anonymous) {
-      setStatus("signed-out");
-      setUserId(null);
+      if (seq === refreshSeq.current) {
+        setStatus("signed-out");
+        setUserId(null);
+      }
       return;
     }
     const admin = await checkIsAdmin();
-    setStatus(admin ? "admin" : "not-admin");
-    setUserId(data.session.user.id);
+    if (seq === refreshSeq.current) {
+      setStatus(admin ? "admin" : "not-admin");
+      setUserId(data.session.user.id);
+    }
   }, []);
 
   useEffect(() => {
@@ -50,6 +61,7 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
+    refreshSeq.current += 1;
     setStatus("signed-out");
     setUserId(null);
   }, []);

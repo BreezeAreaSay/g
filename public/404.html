@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Restaurant Schedule</title>
+    <script type="text/javascript">
+      // GitHub Pages serves plain static files — it has no idea that
+      // "/g/admin" is a route this single-page app handles client-side, so
+      // any direct load of (or refresh on) a URL other than exactly "/g/"
+      // 404s here instead of reaching the app. The standard fix (see
+      // https://github.com/rafgraph/spa-github-pages): encode the real
+      // path into a query string and send the browser back to "/g/", where
+      // the matching inline script in index.html decodes it and restores
+      // the route with history.replaceState before React Router ever reads
+      // the URL — so the user lands on the page they actually asked for.
+      var pathSegmentsToKeep = 1; // "/g" — this repo's Pages base path
+      var l = window.location;
+      l.replace(
+        l.protocol + "//" + l.hostname + (l.port ? ":" + l.port : "") +
+        l.pathname.split("/").slice(0, 1 + pathSegmentsToKeep).join("/") + "/?/" +
+        l.pathname.slice(1).split("/").slice(pathSegmentsToKeep).join("/").replace(/&/g, "~and~") +
+        (l.search ? "&" + l.search.slice(1).replace(/&/g, "~and~") : "") +
+        l.hash
+      );
+    </script>
+  </head>
+  <body></body>
+</html>

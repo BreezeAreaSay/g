@@ -12,6 +12,25 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png" />
     <link rel="manifest" href="manifest.webmanifest" />
     <title>Restaurant Schedule</title>
+    <script type="text/javascript">
+      // Counterpart to public/404.html: undo its redirect encoding and
+      // restore the real path (e.g. "/g/admin") via history.replaceState
+      // *before* React Router mounts and reads window.location, so a
+      // direct load of a deep link ends up on the right page instead of
+      // silently falling back to "/".
+      (function (l) {
+        if (l.search[1] === "/") {
+          var decoded = l.search
+            .slice(1)
+            .split("&")
+            .map(function (s) {
+              return s.replace(/~and~/g, "&");
+            })
+            .join("?");
+          window.history.replaceState(null, "", l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      })(window.location);
+    </script>
   </head>
   <body>
     <div id="root"></div>
