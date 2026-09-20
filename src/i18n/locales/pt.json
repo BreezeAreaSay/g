@@ -75,7 +75,16 @@
     "tapToSet": "Toque para definir o horário",
     "whoElse": "Quem mais está trabalhando",
     "openRequests": "Turnos urgentes",
-    "noOpenRequests": "Nenhum turno urgente no momento"
+    "noOpenRequests": "Nenhum turno urgente no momento",
+    "othersCount_one": "+{{count}} pessoa trabalhando",
+    "othersCount_other": "+{{count}} pessoas trabalhando"
+  },
+  "dayDetail": {
+    "from": "Das",
+    "to": "Até",
+    "clearShift": "Remover meu turno neste dia",
+    "noOthers": "Ainda ninguém mais trabalha neste dia",
+    "errorInvalidRange": "Verifique o horário: entre 10:00 e 22:30, fim depois do início"
   },
   "admin": {
     "login": {
@@ -98,6 +107,14 @@
       "registeredAt": "Cadastrado em",
       "noEmployees": "Nenhum funcionário cadastrado ainda",
       "roles": "Funções"
+    },
+    "day": {
+      "whoWorks": "Quem está trabalhando",
+      "addInterval": "Adicionar intervalo",
+      "noRequirement": "Nenhuma necessidade definida",
+      "people": "pessoas",
+      "peopleScheduled_one": "{{count}} pessoa escalada",
+      "peopleScheduled_other": "{{count}} pessoas escaladas"
     }
   },
   "install": {

@@ -75,7 +75,16 @@
     "tapToSet": "Tap to set your time",
     "whoElse": "Who else is working",
     "openRequests": "Urgent shifts",
-    "noOpenRequests": "No urgent shifts right now"
+    "noOpenRequests": "No urgent shifts right now",
+    "othersCount_one": "+{{count}} person working",
+    "othersCount_other": "+{{count}} people working"
+  },
+  "dayDetail": {
+    "from": "From",
+    "to": "To",
+    "clearShift": "Remove my shift this day",
+    "noOthers": "Nobody else is working this day yet",
+    "errorInvalidRange": "Check the time: between 10:00 and 22:30, end after start"
   },
   "admin": {
     "login": {
@@ -98,6 +107,14 @@
       "registeredAt": "Registered on",
       "noEmployees": "No employees have registered yet",
       "roles": "Roles"
+    },
+    "day": {
+      "whoWorks": "Who's working",
+      "addInterval": "Add interval",
+      "noRequirement": "No requirement set",
+      "people": "people",
+      "peopleScheduled_one": "{{count}} person scheduled",
+      "peopleScheduled_other": "{{count}} people scheduled"
     }
   },
   "install": {

@@ -57,6 +57,38 @@ export interface AppNotification {
   read_at: string | null;
 }
 
+export interface StaffingRequirement {
+  id: string;
+  week_id: string;
+  day_of_week: DayOfWeek;
+  role: StaffRole;
+  start_time: string; // "HH:MM:SS"
+  end_time: string;
+  required_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ShiftSource = "self" | "admin" | "shortage_response";
+
+export interface Shift {
+  id: string;
+  week_id: string;
+  employee_id: string;
+  role: StaffRole;
+  day_of_week: DayOfWeek;
+  start_time: string;
+  end_time: string;
+  source: ShiftSource;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Row from the `shift_schedule` view — shift + employee name, no phone. */
+export interface ShiftScheduleEntry extends Shift {
+  employee_name: string;
+}
+
 export interface AuditLogEntry {
   id: string;
   occurred_at: string;

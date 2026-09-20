@@ -6,6 +6,7 @@ import { changeLanguage, type SupportedLanguage } from "@/i18n";
 interface EmployeeSessionState {
   status: "loading" | "anonymous" | "registered";
   employee: Employee | null;
+  roles: StaffRole[];
   register: (name: string, phone: string, roles: StaffRole[]) => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -20,19 +21,28 @@ async function fetchOwnEmployee(): Promise<Employee | null> {
   return data as Employee | null;
 }
 
+async function fetchOwnRoles(employeeId: string): Promise<StaffRole[]> {
+  const { data, error } = await supabase.from("employee_roles").select("role").eq("employee_id", employeeId);
+  if (error) throw error;
+  return (data ?? []).map((r) => r.role as StaffRole);
+}
+
 export function EmployeeSessionProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<EmployeeSessionState["status"]>("loading");
   const [employee, setEmployee] = useState<Employee | null>(null);
+  const [roles, setRoles] = useState<StaffRole[]>([]);
 
   const refresh = useCallback(async () => {
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
       setEmployee(null);
+      setRoles([]);
       setStatus("anonymous");
       return;
     }
     const own = await fetchOwnEmployee();
     setEmployee(own);
+    setRoles(own ? await fetchOwnRoles(own.id) : []);
     setStatus(own ? "registered" : "anonymous");
   }, []);
 
@@ -55,12 +65,13 @@ export function EmployeeSessionProvider({ children }: { children: ReactNode }) {
     });
     if (error) throw error;
     setEmployee(data as Employee);
+    setRoles(roles);
     setStatus("registered");
     await changeLanguage((data as Employee).preferred_language);
   }, []);
 
   return (
-    <EmployeeSessionContext.Provider value={{ status, employee, register, refresh }}>
+    <EmployeeSessionContext.Provider value={{ status, employee, roles, register, refresh }}>
       {children}
     </EmployeeSessionContext.Provider>
   );

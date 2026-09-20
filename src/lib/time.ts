@@ -1,5 +1,34 @@
 import type { ScheduleWeek } from "@/types/database";
 
+/** Spec §6: the widest range an employee may self-declare. */
+export const EMPLOYEE_SHIFT_MIN_TIME = "10:00";
+export const EMPLOYEE_SHIFT_MAX_TIME = "22:30";
+export const EMPLOYEE_SHIFT_MIN_MINUTES = timeStringToMinutes(EMPLOYEE_SHIFT_MIN_TIME);
+export const EMPLOYEE_SHIFT_MAX_MINUTES = timeStringToMinutes(EMPLOYEE_SHIFT_MAX_TIME);
+
+/** "14:05" -> 845. Accepts the "HH:MM" or "HH:MM:SS" forms Postgres `time` values come back as. */
+export function timeStringToMinutes(value: string): number {
+  const [h, m] = value.split(":");
+  return Number(h) * 60 + Number(m);
+}
+
+/** 845 -> "14:05". */
+export function minutesToTimeString(minutes: number): string {
+  const h = Math.floor(minutes / 60)
+    .toString()
+    .padStart(2, "0");
+  const m = (minutes % 60).toString().padStart(2, "0");
+  return `${h}:${m}`;
+}
+
+export function isWithinEmployeeShiftBounds(startMinutes: number, endMinutes: number): boolean {
+  return (
+    startMinutes >= EMPLOYEE_SHIFT_MIN_MINUTES &&
+    endMinutes <= EMPLOYEE_SHIFT_MAX_MINUTES &&
+    endMinutes > startMinutes
+  );
+}
+
 /** Formats a week's date range for display, e.g. "21–27 сентября 2026". */
 export function formatWeekRange(week: ScheduleWeek, locale: string): string {
   const start = new Date(`${week.start_date}T00:00:00`);

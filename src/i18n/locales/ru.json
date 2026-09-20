@@ -76,7 +76,17 @@
     "tapToSet": "Нажмите, чтобы указать время",
     "whoElse": "Кто ещё работает",
     "openRequests": "Срочные смены",
-    "noOpenRequests": "Пока нет срочных смен"
+    "noOpenRequests": "Пока нет срочных смен",
+    "othersCount_one": "+{{count}} человек работает",
+    "othersCount_few": "+{{count}} человека работает",
+    "othersCount_many": "+{{count}} человек работает"
+  },
+  "dayDetail": {
+    "from": "С",
+    "to": "До",
+    "clearShift": "Убрать смену на этот день",
+    "noOthers": "В этот день пока никто не работает",
+    "errorInvalidRange": "Проверьте время: с 10:00 до 22:30, окончание позже начала"
   },
   "admin": {
     "login": {
@@ -99,6 +109,15 @@
       "registeredAt": "Дата регистрации",
       "noEmployees": "Пока нет зарегистрированных сотрудников",
       "roles": "Роли"
+    },
+    "day": {
+      "whoWorks": "Кто работает",
+      "addInterval": "Добавить интервал",
+      "noRequirement": "Потребность не задана",
+      "people": "чел.",
+      "peopleScheduled_one": "{{count}} человек в расписании",
+      "peopleScheduled_few": "{{count}} человека в расписании",
+      "peopleScheduled_many": "{{count}} человек в расписании"
     }
   },
   "install": {
