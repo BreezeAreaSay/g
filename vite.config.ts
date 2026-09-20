@@ -61,5 +61,9 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
     css: false,
+    // supabase/functions/** runs on Deno, not Vitest/Node — it has its
+    // own *.test.ts files (run with `deno test`), which must not be
+    // picked up here or they fail on Deno-only imports like `Deno.test`.
+    exclude: ["**/node_modules/**", "supabase/**"],
   },
 });

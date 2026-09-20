@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabaseClient";
 
 interface AdminSessionState {
   status: "loading" | "signed-out" | "not-admin" | "admin";
+  userId: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -17,6 +18,7 @@ async function checkIsAdmin(): Promise<boolean> {
 
 export function AdminSessionProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AdminSessionState["status"]>("loading");
+  const [userId, setUserId] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     const { data } = await supabase.auth.getSession();
@@ -24,10 +26,12 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
     // an anonymous employee session must never pass this check.
     if (!data.session || data.session.user.is_anonymous) {
       setStatus("signed-out");
+      setUserId(null);
       return;
     }
     const admin = await checkIsAdmin();
     setStatus(admin ? "admin" : "not-admin");
+    setUserId(data.session.user.id);
   }, []);
 
   useEffect(() => {
@@ -47,10 +51,11 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setStatus("signed-out");
+    setUserId(null);
   }, []);
 
   return (
-    <AdminSessionContext.Provider value={{ status, signIn, signOut }}>{children}</AdminSessionContext.Provider>
+    <AdminSessionContext.Provider value={{ status, userId, signIn, signOut }}>{children}</AdminSessionContext.Provider>
   );
 }
 

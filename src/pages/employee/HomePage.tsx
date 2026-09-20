@@ -8,6 +8,8 @@ import { useWeekShifts } from "@/hooks/useWeekShifts";
 import { useShortageRequests } from "@/hooks/useShortageRequests";
 import { formatWeekRange } from "@/lib/time";
 import { supabase } from "@/lib/supabaseClient";
+import { enablePushForEmployee } from "@/lib/push";
+import { NotificationPermissionBanner } from "@/components/NotificationPermissionBanner";
 
 export function HomePage() {
   const { t, i18n } = useTranslation();
@@ -34,6 +36,12 @@ export function HomePage() {
           <p className="mt-1 text-sm text-slate-500">
             {t("home.weekLabel")}: {formatWeekRange(week, i18n.language)}
           </p>
+        )}
+
+        {employee && (
+          <div className="mt-4">
+            <NotificationPermissionBanner onEnable={() => enablePushForEmployee(employee.id)} />
+          </div>
         )}
 
         {openRequests.length > 0 && (

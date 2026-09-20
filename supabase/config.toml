@@ -381,6 +381,12 @@ inspector_port = 8083
 # The Deno major version to use.
 deno_version = 2
 
+
+[functions.send-push]
+# Called by the Database Webhook trigger (no end-user JWT), not directly
+# by the browser — so there's no user session to verify here.
+verify_jwt = false
+
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 

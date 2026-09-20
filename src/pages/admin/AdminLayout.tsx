@@ -2,6 +2,8 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAdminSession } from "@/context/AdminSessionContext";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { NotificationPermissionBanner } from "@/components/NotificationPermissionBanner";
+import { enablePushForAdmin } from "@/lib/push";
 import { AdminLoginPage } from "./LoginPage";
 
 const TABS = [
@@ -11,7 +13,7 @@ const TABS = [
 
 export function AdminLayout() {
   const { t } = useTranslation();
-  const { status, signOut } = useAdminSession();
+  const { status, userId, signOut } = useAdminSession();
 
   if (status === "loading") return <LoadingScreen />;
   if (status !== "admin") return <AdminLoginPage />;
@@ -42,6 +44,7 @@ export function AdminLayout() {
         </div>
       </header>
       <main className="mx-auto max-w-md px-4 py-6">
+        {userId && <NotificationPermissionBanner onEnable={() => enablePushForAdmin(userId)} />}
         <Outlet />
       </main>
     </div>
