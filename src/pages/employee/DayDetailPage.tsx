@@ -77,74 +77,72 @@ export function DayDetailPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-slate-50 px-4 pb-10 pt-6">
-      <div className="mx-auto max-w-md">
-        <button onClick={() => navigate("/")} className="mb-4 text-sm font-medium text-slate-500">
-          ← {t("common.back")}
-        </button>
-        <h1 className="text-xl font-bold text-slate-900">{t(`days.${dayOfWeek}`)}</h1>
+    <div>
+      <button onClick={() => navigate("/")} className="mb-4 text-sm font-medium text-slate-500">
+        ← {t("common.back")}
+      </button>
+      <h1 className="text-xl font-bold text-slate-900">{t(`days.${dayOfWeek}`)}</h1>
 
-        <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          {roles.length > 1 && (
-            <div className="mb-4 flex gap-3">
-              {roles.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setRole(r)}
-                  aria-pressed={role === r}
-                  className={`min-h-12 flex-1 rounded-xl border px-4 text-sm font-semibold ${
-                    role === r ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-700"
-                  }`}
-                >
-                  {t(`roles.${r}`)}
-                </button>
-              ))}
-            </div>
-          )}
-
-          <TimeRangeInput start={start} end={end} onChange={(s, e) => { setStart(s); setEnd(e); }} />
-
-          {error && <p className="mt-3 text-sm font-medium text-red-600">{error}</p>}
-
-          <div className="mt-5 flex gap-3">
-            <Button onClick={() => void handleSave()} disabled={saving}>
-              {t("common.save")}
-            </Button>
+      <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        {roles.length > 1 && (
+          <div className="mb-4 flex gap-3">
+            {roles.map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setRole(r)}
+                aria-pressed={role === r}
+                className={`min-h-12 flex-1 rounded-xl border px-4 text-sm font-semibold ${
+                  role === r ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-700"
+                }`}
+              >
+                {t(`roles.${r}`)}
+              </button>
+            ))}
           </div>
-          {myShift && (
-            <button
-              onClick={() => void handleClear()}
-              disabled={saving}
-              className="mt-3 w-full text-center text-sm font-medium text-red-600"
-            >
-              {t("dayDetail.clearShift")}
-            </button>
-          )}
-        </div>
+        )}
 
-        <div className="mt-6">
-          <h2 className="mb-2 text-sm font-semibold text-slate-500">{t("home.whoElse")}</h2>
-          {others.length === 0 ? (
-            <p className="text-sm text-slate-400">{t("dayDetail.noOthers")}</p>
-          ) : (
-            <ul className="space-y-2">
-              {others
-                .sort((a, b) => a.start_time.localeCompare(b.start_time))
-                .map((s) => (
-                  <li
-                    key={s.id}
-                    className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3"
-                  >
-                    <span className="font-medium text-slate-900">{s.employee_name}</span>
-                    <span className="text-sm text-slate-500">
-                      {t(`roles.${s.role}`)} · {s.start_time.slice(0, 5)}–{s.end_time.slice(0, 5)}
-                    </span>
-                  </li>
-                ))}
-            </ul>
-          )}
+        <TimeRangeInput start={start} end={end} onChange={(s, e) => { setStart(s); setEnd(e); }} />
+
+        {error && <p className="mt-3 text-sm font-medium text-red-600">{error}</p>}
+
+        <div className="mt-5 flex gap-3">
+          <Button onClick={() => void handleSave()} disabled={saving}>
+            {t("common.save")}
+          </Button>
         </div>
+        {myShift && (
+          <button
+            onClick={() => void handleClear()}
+            disabled={saving}
+            className="mt-3 w-full text-center text-sm font-medium text-red-600"
+          >
+            {t("dayDetail.clearShift")}
+          </button>
+        )}
+      </div>
+
+      <div className="mt-6">
+        <h2 className="mb-2 text-sm font-semibold text-slate-500">{t("home.whoElse")}</h2>
+        {others.length === 0 ? (
+          <p className="text-sm text-slate-400">{t("dayDetail.noOthers")}</p>
+        ) : (
+          <ul className="space-y-2">
+            {others
+              .sort((a, b) => a.start_time.localeCompare(b.start_time))
+              .map((s) => (
+                <li
+                  key={s.id}
+                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3"
+                >
+                  <span className="font-medium text-slate-900">{s.employee_name}</span>
+                  <span className="text-sm text-slate-500">
+                    {t(`roles.${s.role}`)} · {s.start_time.slice(0, 5)}–{s.end_time.slice(0, 5)}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        )}
       </div>
     </div>
   );
