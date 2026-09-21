@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAdminSession } from "@/context/AdminSessionContext";
@@ -13,9 +14,42 @@ const TABS = [
   { to: "/admin/history", label: "admin.nav.history" },
 ];
 
+const ADMIN_TITLE = "Расписание — Админ";
+const DEFAULT_TITLE = "Restaurant Schedule";
+
+/**
+ * "Add to Home Screen" always launches whatever manifest.webmanifest's
+ * start_url is — which is "/g/" (the employee welcome screen) — no matter
+ * which page you were on when you added it. So installing from /admin
+ * silently produced an icon that opens the wrong screen. Pointing the
+ * manifest <link> at a second, admin-only manifest (start_url "/g/admin")
+ * while this layout is mounted fixes that for Chrome/Android's installer;
+ * updating document.title does the same for iOS Safari, which pre-fills
+ * "Add to Home Screen"'s name field from the live title, not a manifest.
+ */
+function useAdminHomeScreenIdentity() {
+  useEffect(() => {
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    const previousHref = manifestLink?.getAttribute("href") ?? null;
+    const previousTitle = document.title;
+
+    // Absolute path: a relative one would resolve against whatever nested
+    // admin route is currently on screen (e.g. /g/admin/employees), not
+    // against the app's base — breaking on every route but exactly "/admin".
+    manifestLink?.setAttribute("href", `${import.meta.env.BASE_URL}admin-manifest.webmanifest`);
+    document.title = ADMIN_TITLE;
+
+    return () => {
+      if (previousHref !== null) manifestLink?.setAttribute("href", previousHref);
+      document.title = previousTitle || DEFAULT_TITLE;
+    };
+  }, []);
+}
+
 export function AdminLayout() {
   const { t } = useTranslation();
   const { status, userId, signOut } = useAdminSession();
+  useAdminHomeScreenIdentity();
 
   if (status === "loading") return <LoadingScreen />;
   if (status !== "admin") return <AdminLoginPage />;
