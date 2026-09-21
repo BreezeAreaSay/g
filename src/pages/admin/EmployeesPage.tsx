@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabaseClient";
 import type { Employee, StaffRole } from "@/types/database";
@@ -9,25 +9,41 @@ export function AdminEmployeesPage() {
   const { t, i18n } = useTranslation();
   const [employees, setEmployees] = useState<EmployeeWithRoles[]>([]);
   const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    // Admin RLS allows reading every employee row (phone included) plus
+    // their roles in one query via the FK relationship.
+    const { data, error } = await supabase
+      .from("employees")
+      .select("*, employee_roles(role)")
+      .order("created_at", { ascending: false });
+    if (!error) setEmployees((data as EmployeeWithRoles[]) ?? []);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      // Admin RLS allows reading every employee row (phone included) plus
-      // their roles in one query via the FK relationship.
-      const { data, error } = await supabase
-        .from("employees")
-        .select("*, employee_roles(role)")
-        .order("created_at", { ascending: false });
-      if (cancelled) return;
-      if (!error) setEmployees((data as EmployeeWithRoles[]) ?? []);
-      setLoading(false);
-    }
     void load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  }, [load]);
+
+  async function toggleActive(emp: EmployeeWithRoles) {
+    const goingActive = !emp.is_active;
+    const confirmMsg = t(goingActive ? "admin.employees.confirmActivate" : "admin.employees.confirmDeactivate", {
+      name: emp.name,
+    });
+    if (!window.confirm(confirmMsg)) return;
+
+    setBusyId(emp.id);
+    try {
+      const { error } = await supabase.rpc("admin_set_employee_active", {
+        p_employee_id: emp.id,
+        p_is_active: goingActive,
+      });
+      if (!error) await load();
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   if (loading) return <p className="text-sm text-slate-500">{t("common.loading")}</p>;
 
@@ -44,7 +60,9 @@ export function AdminEmployeesPage() {
             <div className="flex items-center justify-between">
               <span className="text-base font-semibold text-slate-900">{emp.name}</span>
               {!emp.is_active && (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">inactive</span>
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
+                  {t("admin.employees.inactiveBadge")}
+                </span>
               )}
             </div>
             <dl className="mt-2 space-y-1 text-sm text-slate-600">
@@ -68,6 +86,17 @@ export function AdminEmployeesPage() {
                 </dd>
               </div>
             </dl>
+            <button
+              onClick={() => void toggleActive(emp)}
+              disabled={busyId === emp.id}
+              className={`mt-3 min-h-10 w-full rounded-xl text-sm font-semibold disabled:opacity-50 ${
+                emp.is_active
+                  ? "border border-red-200 bg-red-50 text-red-600 active:bg-red-100"
+                  : "border border-slate-300 bg-white text-slate-700 active:bg-slate-50"
+              }`}
+            >
+              {t(emp.is_active ? "admin.employees.deactivate" : "admin.employees.activate")}
+            </button>
           </li>
         ))}
       </ul>

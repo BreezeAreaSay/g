@@ -110,7 +110,12 @@
       "phone": "Telefone",
       "registeredAt": "Cadastrado em",
       "noEmployees": "Nenhum funcionário cadastrado ainda",
-      "roles": "Funções"
+      "roles": "Funções",
+      "deactivate": "Desativar",
+      "activate": "Ativar",
+      "inactiveBadge": "inativo",
+      "confirmDeactivate": "Ocultar {{name}} dos funcionários ativos? O histórico de turnos é mantido, e você pode reativar a qualquer momento.",
+      "confirmActivate": "Tornar {{name}} um funcionário ativo novamente?"
     },
     "day": {
       "whoWorks": "Quem está trabalhando",

@@ -110,7 +110,12 @@
       "phone": "Phone",
       "registeredAt": "Registered on",
       "noEmployees": "No employees have registered yet",
-      "roles": "Roles"
+      "roles": "Roles",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "inactiveBadge": "inactive",
+      "confirmDeactivate": "Hide {{name}} from active employees? Their shift history is kept, and you can turn them back on anytime.",
+      "confirmActivate": "Make {{name}} an active employee again?"
     },
     "day": {
       "whoWorks": "Who's working",

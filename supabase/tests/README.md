@@ -50,4 +50,5 @@ PSQL_RUN='psql -U postgres -h localhost -c' TEST_DB=my_test_db ./supabase/tests/
 | `05_attendance_admin_conflicts.sql` | Приход/уход, редактирование админом, обнаружение пересечений |
 | `06_admin_attendance_insert.sql` | Прямая вставка фактического времени админом (когда сотрудник забыл отметиться) |
 | `07_early_late_arrival.sql` | Приход раньше/позже плана сохраняется без округления |
+| `08_admin_employee_active.sql` | Деактивация/активация сотрудника админом — история сохраняется, только админ может это делать |
 | `race_condition_concurrent_accept.sh` | Настоящая гонка: 6 параллельных подключений, needed_count=2 |
